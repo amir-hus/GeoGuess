@@ -32,10 +32,16 @@ systemctl restart gg-helper
 sleep 1
 systemctl is-active --quiet gg-helper || { journalctl -u gg-helper -n 20 --no-pager; exit 1; }
 
-# nginx site (keeps a backup of the old one)
+# nginx site (keeps a backup of the old one, and puts it back if the new one is rejected)
 if ! cmp -s "$DIR/nginx-geoguess.conf" "$SITE"; then
-    cp "$SITE" "$SITE.bak-$(date +%Y%m%d-%H%M%S)"
+    BACKUP="$SITE.bak-$(date +%Y%m%d-%H%M%S)"
+    cp "$SITE" "$BACKUP"
     install -m 644 "$DIR/nginx-geoguess.conf" "$SITE"
+    if ! nginx -t; then
+        cp "$BACKUP" "$SITE"
+        echo "nginx rejected the new site config; the old one was restored. Nothing else was changed in nginx."
+        exit 1
+    fi
 fi
 nginx -t
 systemctl reload nginx
