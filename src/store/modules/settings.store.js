@@ -5,7 +5,11 @@ import { GAME_MODE, SCORE_MODE } from '../../constants';
 import i18n from '../../lang';
 import router from '../../router';
 import { getMaxDistanceBbox } from '../../utils';
+import { startRoomHeartbeat } from '../../utils/roomHeartbeat';
 import * as MutationTypes from '../mutation-types';
+
+// Stops the heartbeat of the room currently open in the dialog
+let stopRoomHeartbeat = () => {};
 
 // Circle to draw on the guess map ({ lat, lng, radius } in km), set by My Area
 const getPlayArea = (rootState) =>
@@ -92,6 +96,8 @@ export default {
                 const playerNumber = numberOfPlayers + 1;
 
                 state.playerNumber = playerNumber;
+                stopRoomHeartbeat();
+                stopRoomHeartbeat = startRoomHeartbeat(roomName, playerNumber);
                 const name = state.name === '' ? i18n.t(
                                 'CardRoomPlayerName.anonymousPlayerName'
                             ) + playerNumber : state.name;
@@ -187,6 +193,8 @@ export default {
             state.players = players;
         },
         [MutationTypes.SETTINGS_RESET](state) {
+            stopRoomHeartbeat();
+            stopRoomHeartbeat = () => {};
             state.room = null;
             state.roomName = '';
             state.playerNumber = 0;

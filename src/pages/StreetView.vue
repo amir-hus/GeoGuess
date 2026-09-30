@@ -139,6 +139,7 @@ import StreetViewService from '@/plugins/StreetViewService';
 import {
     getRandomArea,
 } from '../utils';
+import { startRoomHeartbeat } from '../utils/roomHeartbeat';
 
 import { GAME_MODE, SCORE_MODE } from '../constants';
 
@@ -352,6 +353,10 @@ export default {
             }
 
             this.room.child('active').set(true);
+            this.stopRoomHeartbeat = startRoomHeartbeat(
+                this.roomName,
+                this.playerNumber
+            );
             this.room.on('value', (snapshot) => {
                 // Check if the room is already removed
                 if (snapshot.hasChild('active')) {
@@ -489,6 +494,9 @@ export default {
                 );
         }
         window.removeEventListener('beforeunload', this.beforeUnload);
+        if (this.stopRoomHeartbeat) {
+            this.stopRoomHeartbeat();
+        }
         if (this.room) {
             // Remove the room when the player refreshes the window
             // Remove the room when the player pressed the back button on browser
