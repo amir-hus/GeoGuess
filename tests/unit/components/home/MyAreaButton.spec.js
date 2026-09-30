@@ -1,14 +1,14 @@
-import MyAreaCard from '@/components/home/card/MyAreaCard.vue';
+import MyAreaButton from '@/components/home/MyAreaButton.vue';
 import { GeoMapCustom } from '@/models/GeoMap';
 import axios from '@/plugins/axios';
 import settingsStore from '@/store/modules/settings.store';
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-import appInit from '../../../testutils/appInit';
+import appInit from '../../testutils/appInit';
 
 const args = appInit(createLocalVue());
 
-describe('MyAreaCard.vue', () => {
+describe('MyAreaButton.vue', () => {
     let store, actions, setMapLoaded;
     beforeEach(() => {
         localStorage.clear();
@@ -40,7 +40,7 @@ describe('MyAreaCard.vue', () => {
     });
 
     const mount = () =>
-        shallowMount(MyAreaCard, {
+        shallowMount(MyAreaButton, {
             ...args,
             store,
         });
@@ -75,6 +75,16 @@ describe('MyAreaCard.vue', () => {
         expect(wrapper.vm.isRadiusValid).toBe(false);
         await wrapper.setData({ radius: '' });
         expect(wrapper.vm.isRadiusValid).toBe(false);
+    });
+
+    it('computed: slider should follow the radius and cap at its maximum', async () => {
+        const wrapper = mount();
+        wrapper.vm.sliderRadius = 35;
+        expect(wrapper.vm.radius).toEqual(35);
+
+        await wrapper.setData({ radius: 250 });
+        expect(wrapper.vm.sliderRadius).toEqual(100);
+        expect(wrapper.vm.isRadiusValid).toBe(true);
     });
 
     it('open: should center on the browser location when allowed', () => {

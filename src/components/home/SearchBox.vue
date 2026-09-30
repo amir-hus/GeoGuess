@@ -24,6 +24,7 @@
             </v-btn>
             <DialogRoom />
         </div>
+        <MyAreaButton />
         <div class="search-box__mapmenu">
             <v-btn
                 text
@@ -44,11 +45,13 @@
 <script>
 import DialogCustomMap from '@/components/home/DialogCustomMap';
 import DialogRoom from '@/components/dialogroom/DialogRoom';
+import MyAreaButton from '@/components/home/MyAreaButton';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
         DialogRoom,
         DialogCustomMap,
+        MyAreaButton,
     },
     props: {
         dialogCustomOpen: Boolean,
@@ -108,7 +111,7 @@ export default {
     }
     &__mapmenu {
         text-align: center;
-        margin-top: 3rem;
+        margin-top: 1.5rem;
     }
 }
 @media (max-width: 410px) {

@@ -1,41 +1,16 @@
 <template>
-    <v-card class="map-card my-area-card" rounded="lg" width="200">
-        <v-sheet
-            class="my-area-card__banner"
-            height="150px"
-            color="secondary"
-            dark
+    <div class="my-area">
+        <v-btn
+            class="my-area__btn"
+            rounded
+            outlined
+            large
+            color="primary"
+            @click="open"
         >
-            <v-icon class="my-area-card__icon" size="80">
-                mdi-map-marker-radius
-            </v-icon>
-            <v-card-title class="map-card__title">
-                {{ $t('MyArea.title') }}
-            </v-card-title>
-        </v-sheet>
-        <v-card-actions class="map-card__actions">
-            <v-subheader>{{ $t('MyArea.radius') }}</v-subheader>
-            <v-text-field
-                v-model.number="radius"
-                class="my-area-card__radius"
-                type="number"
-                :min="minRadius"
-                :max="maxRadius"
-                suffix="km"
-                dense
-                outlined
-                hide-details
-            />
-            <v-spacer />
-            <v-btn
-                text
-                color="darkGreen"
-                :disabled="!isRadiusValid"
-                @click="open"
-            >
-                {{ $t('Home.play') }}
-            </v-btn>
-        </v-card-actions>
+            <v-icon left>mdi-map-marker-radius</v-icon>
+            {{ $t('MyArea.button') }}
+        </v-btn>
 
         <v-dialog
             v-model="visible"
@@ -43,9 +18,7 @@
             :fullscreen="$viewport.width < 450"
         >
             <v-card>
-                <v-card-title>
-                    {{ $t('MyArea.dialogTitle', { radius }) }}
-                </v-card-title>
+                <v-card-title>{{ $t('MyArea.title') }}</v-card-title>
                 <v-card-text>
                     <v-alert v-if="locating" type="info" dense text>
                         {{ $t('MyArea.locating') }}
@@ -73,6 +46,31 @@
                         @click:append-outer="searchPlace"
                     />
 
+                    <div class="my-area__radius">
+                        <span class="my-area__radius__label">
+                            {{ $t('MyArea.radius') }}
+                        </span>
+                        <v-slider
+                            v-model="sliderRadius"
+                            :min="minRadius"
+                            :max="sliderMax"
+                            hide-details
+                            class="mx-3"
+                        />
+                        <v-text-field
+                            v-model.number="radius"
+                            class="my-area__radius__input"
+                            type="number"
+                            :min="minRadius"
+                            :max="maxRadius"
+                            suffix="km"
+                            dense
+                            outlined
+                            hide-details
+                            :error="!isRadiusValid"
+                        />
+                    </div>
+
                     <GmapMap
                         :center="center || defaultCenter"
                         :zoom="center ? zoom : 1"
@@ -94,6 +92,7 @@
                                 @dragend="onClickMap"
                             />
                             <GmapCircle
+                                v-if="isRadiusValid"
                                 :center="center"
                                 :radius="radius * 1000"
                                 :options="circleOptions"
@@ -127,7 +126,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-    </v-card>
+    </div>
 </template>
 
 <script>
@@ -149,11 +148,12 @@ function loadRadius() {
 }
 
 export default {
-    name: 'MyAreaCard',
+    name: 'MyAreaButton',
     data() {
         return {
             radius: loadRadius(),
             minRadius: 1,
+            sliderMax: 100,
             maxRadius: 500,
             visible: false,
             center: null,
@@ -180,12 +180,24 @@ export default {
                 this.radius <= this.maxRadius
             );
         },
+        // The slider covers the common range; larger radii are typed in the field
+        sliderRadius: {
+            get() {
+                return this.isRadiusValid
+                    ? Math.min(this.radius, this.sliderMax)
+                    : this.minRadius;
+            },
+            set(value) {
+                this.radius = value;
+            },
+        },
         canPlay() {
             return this.isRadiusValid && this.center !== null;
         },
         zoom() {
             // Fit roughly two diameters of the circle in the map
-            const zoom = Math.round(Math.log2(40075 / (this.radius * 4)));
+            const radius = this.isRadiusValid ? this.radius : DEFAULT_RADIUS;
+            const zoom = Math.round(Math.log2(40075 / (radius * 4)));
             return Math.min(Math.max(zoom, 2), 16);
         },
     },
@@ -280,23 +292,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.my-area-card {
-    &__banner {
-        position: relative;
-        display: flex;
-        align-items: flex-end;
+.my-area {
+    // Same width as the Single player / With friends row so the pill sits centred under it
+    width: calc(100% - 50px);
+    margin-top: 1.25rem;
+    text-align: center;
+
+    &__btn {
+        padding: 0 2.5em !important;
+        font-size: 1rem;
     }
-    &__icon {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-        opacity: 0.8;
-    }
+
     &__radius {
-        max-width: 90px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        &__input {
+            max-width: 100px;
+        }
+    }
+}
+
+@media (max-width: 410px) {
+    .my-area {
+        margin-top: 0;
+
+        &__btn {
+            width: 80%;
+            margin: 2% auto;
+        }
     }
 }
 </style>

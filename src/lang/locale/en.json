@@ -162,10 +162,9 @@
     "cantPlayGeoJson": "Invalid GeoJSON, you need to have more than 5 positions."
   },
   "MyArea": {
-    "sectionTitle": "Around You",
+    "button": "Play near me",
     "title": "My Area",
     "radius": "Radius",
-    "dialogTitle": "My Area: {radius} km around you",
     "locating": "Getting your location…",
     "locationError": {
       "denied": "Location access was denied. Search for a place or tap the map to drop a pin.",

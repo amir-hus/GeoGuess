@@ -25,13 +25,7 @@
                 width="50px"
             />
         </div>
-        <template v-if="search === ''">
-            <v-container><h2>{{ $t('MyArea.sectionTitle') }}</h2></v-container>
-            <section class="maps">
-                <MyAreaCard />
-            </section>
-        </template>
-        <template
+        <template 
             v-if="showAreas"
         >
             <v-container> <h2>{{ $t('Home.Sections.areasTitle') }}</h2></v-container>
@@ -93,12 +87,10 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import HomeCard from '@/components/home/card/HomeCard';
-import MyAreaCard from '@/components/home/card/MyAreaCard';
 
 export default {
     components: {
         HomeCard,
-        MyAreaCard,
     },
   
     data() {
