@@ -49,6 +49,8 @@ export default {
         loadRoom: false,
         currentComponent: 'settingsMap',
         singlePlayer: true,
+        // Map already chosen before opening the dialog (e.g. My Area), so skip the map step
+        skipMapStep: false,
 
         // ROOM
         room: null,
@@ -108,7 +110,7 @@ export default {
                                         firebase.database.ServerValue.TIMESTAMP,
                                 });
                                 state.loadRoom = false;
-                                state.currentComponent = 'settingsMap';
+                                state.currentComponent = state.skipMapStep ? 'settings' : 'settingsMap';
                             }
                         }
                     );
@@ -155,7 +157,14 @@ export default {
         },
         [MutationTypes.SETTINGS_SET_MODE_DIALOG_ROOM](state, singlePlayer) {
             state.singlePlayer = singlePlayer;
-            state.currentComponent = singlePlayer ? 'settingsMap' : 'roomName';
+            if (!singlePlayer) {
+                state.currentComponent = 'roomName';
+            } else {
+                state.currentComponent = state.skipMapStep ? 'settings' : 'settingsMap';
+            }
+        },
+        [MutationTypes.SETTINGS_SET_SKIP_MAP_STEP](state, skip) {
+            state.skipMapStep = skip;
         },
 
         [MutationTypes.SETTINGS_SET_STEP_DIALOG_ROOM](state, step) {
@@ -180,6 +189,7 @@ export default {
             state.roomErrorMessage = null;
             state.players = [];
             state.gameSettings = new GameSettings();
+            state.skipMapStep = false;
         },
     },
 

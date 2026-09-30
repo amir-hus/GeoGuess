@@ -24,6 +24,7 @@
             </v-btn>
             <DialogRoom />
         </div>
+        <MyAreaButton />
         <div class="search-box__mapmenu">
             <v-btn
                 text
@@ -44,11 +45,13 @@
 <script>
 import DialogCustomMap from '@/components/home/DialogCustomMap';
 import DialogRoom from '@/components/dialogroom/DialogRoom';
+import MyAreaButton from '@/components/home/MyAreaButton';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     components: {
         DialogRoom,
         DialogCustomMap,
+        MyAreaButton,
     },
     props: {
         dialogCustomOpen: Boolean,
@@ -96,7 +99,7 @@ export default {
         font-size: 1.2rem !important;
     }
     &__btns {
-        margin-top: 1.125rem;
+        margin: 1.125rem auto 0;
         display: flex;
         justify-content: space-around;
         width: calc(100% - 50px);
@@ -107,8 +110,10 @@ export default {
         }
     }
     &__mapmenu {
+        // Same width as the play buttons row so it stays centred under them
+        width: calc(100% - 50px);
         text-align: center;
-        margin-top: 3rem;
+        margin: 1.5rem auto 0;
     }
 }
 @media (max-width: 410px) {
@@ -120,11 +125,15 @@ export default {
         }
         .search-box__btns {
             margin-top: 0;
+            width: 100%;
             flex-direction: column;
             .v-btn {
                 width: 80%;
                 margin: 2% auto;
             }
+        }
+        .search-box__mapmenu {
+            width: 100%;
         }
     }
 }
