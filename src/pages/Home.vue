@@ -148,9 +148,14 @@ export default {
         .home-page__main .home-page__main__container {
             .home-page__main__layout {
                 flex-direction: column-reverse;
+                // Grow with the content instead of a fixed height, so the title never slides under the header
+                height: auto;
+                min-height: calc(70vh - 100px);
+                padding: 2rem 0 5rem;
 
                 .box {
                     width: 90vw;
+                    margin: 0 auto;
                 }
             }
         }
