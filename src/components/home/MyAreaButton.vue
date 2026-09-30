@@ -3,9 +3,9 @@
         <v-btn
             class="my-area__btn"
             rounded
-            outlined
             large
-            color="primary"
+            dark
+            color="darkGreen"
             @click="open"
         >
             <v-icon left>mdi-map-marker-radius</v-icon>
@@ -130,9 +130,10 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapMutations } from 'vuex';
 import axios from '@/plugins/axios';
 import { GeoMapCustom } from '@/models/GeoMap';
+import { SETTINGS_SET_SKIP_MAP_STEP } from '@/store/mutation-types';
 import { createCircleGeoJson } from '@/utils/circle';
 
 const DEFAULT_RADIUS = 10;
@@ -214,6 +215,9 @@ export default {
     methods: {
         ...mapActions(['setMapLoaded']),
         ...mapActions('settingsStore', ['openDialogRoom']),
+        ...mapMutations('settingsStore', {
+            setSkipMapStep: SETTINGS_SET_SKIP_MAP_STEP,
+        }),
         open() {
             this.visible = true;
             if (!this.center) {
@@ -285,6 +289,8 @@ export default {
             );
             this.setMapLoaded(map);
             this.visible = false;
+            // The circle is already the map, so go straight to the game settings
+            this.setSkipMapStep(true);
             this.openDialogRoom(isSinglePlayer);
         },
     },
@@ -295,12 +301,11 @@ export default {
 .my-area {
     // Same width as the Single player / With friends row so the pill sits centred under it
     width: calc(100% - 50px);
-    margin-top: 1.25rem;
+    margin: 1.25rem auto 0;
     text-align: center;
 
     &__btn {
         padding: 0 2.5em !important;
-        font-size: 1rem;
     }
 
     &__radius {
@@ -316,6 +321,7 @@ export default {
 
 @media (max-width: 410px) {
     .my-area {
+        width: 100%;
         margin-top: 0;
 
         &__btn {

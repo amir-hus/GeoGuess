@@ -172,6 +172,7 @@ describe('MyAreaButton.vue', () => {
         expect(map.name).toEqual('My Area (10 km)');
         expect(map.geojson.geometry.type).toEqual('Polygon');
         expect(actions.openDialogRoom).toBeCalledWith(expect.anything(), false);
+        expect(store.state.settingsStore.skipMapStep).toBe(true);
     });
 
     it('play: should do nothing without a center', () => {

@@ -29,6 +29,31 @@ describe('settingsStore.js', () => {
 
     });
 
+    it('SETTINGS_SET_MODE_DIALOG_ROOM should open on the map step by default', ()=>{
+        const state = { skipMapStep: false };
+        settingsStore.mutations[MutationTypes.SETTINGS_SET_MODE_DIALOG_ROOM](state, true);
+        expect(state.currentComponent).toEqual('settingsMap');
+
+        settingsStore.mutations[MutationTypes.SETTINGS_SET_MODE_DIALOG_ROOM](state, false);
+        expect(state.currentComponent).toEqual('roomName');
+    });
+
+    it('SETTINGS_SET_SKIP_MAP_STEP should open single player on the settings step', ()=>{
+        const state = { skipMapStep: false };
+        settingsStore.mutations[MutationTypes.SETTINGS_SET_SKIP_MAP_STEP](state, true);
+        settingsStore.mutations[MutationTypes.SETTINGS_SET_MODE_DIALOG_ROOM](state, true);
+        expect(state.currentComponent).toEqual('settings');
+
+        settingsStore.mutations[MutationTypes.SETTINGS_SET_MODE_DIALOG_ROOM](state, false);
+        expect(state.currentComponent).toEqual('roomName');
+    });
+
+    it('SETTINGS_RESET should clear the skip map step flag', ()=>{
+        const state = { skipMapStep: true };
+        settingsStore.mutations[MutationTypes.SETTINGS_RESET](state);
+        expect(state.skipMapStep).toBe(false);
+    });
+
     it('setPlayerName will commit playerName', ()=>{
         const spy = jest.spyOn(window.localStorage.__proto__, 'setItem');
         const commit = jest.fn();
