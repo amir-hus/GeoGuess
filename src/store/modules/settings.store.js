@@ -5,11 +5,8 @@ import { GAME_MODE, SCORE_MODE } from '../../constants';
 import i18n from '../../lang';
 import router from '../../router';
 import { getMaxDistanceBbox } from '../../utils';
-import { startRoomHeartbeat } from '../../utils/roomHeartbeat';
+import { isRoomClosing, ROOM_CLOSED_ALERT } from '../../utils/rooms';
 import * as MutationTypes from '../mutation-types';
-
-// Stops the heartbeat of the room currently open in the dialog
-let stopRoomHeartbeat = () => {};
 
 // Circle to draw on the guess map ({ lat, lng, radius } in km), set by My Area
 const getPlayArea = (rootState) =>
@@ -82,6 +79,11 @@ export default {
             }
 
             state.room.once('value', (snapshot) => {
+                if (isRoomClosing(snapshot)) {
+                    state.roomErrorMessage = i18n.t('DialogRoom.roomClosing');
+                    state.room.off();
+                    return;
+                }
                 if (snapshot.child('started').val()) {
                     state.roomErrorMessage = i18n.t(
                         'DialogRoom.alreadyStarted'
@@ -96,8 +98,6 @@ export default {
                 const playerNumber = numberOfPlayers + 1;
 
                 state.playerNumber = playerNumber;
-                stopRoomHeartbeat();
-                stopRoomHeartbeat = startRoomHeartbeat(roomName, playerNumber);
                 const name = state.name === '' ? i18n.t(
                                 'CardRoomPlayerName.anonymousPlayerName'
                             ) + playerNumber : state.name;
@@ -193,8 +193,6 @@ export default {
             state.players = players;
         },
         [MutationTypes.SETTINGS_RESET](state) {
-            stopRoomHeartbeat();
-            stopRoomHeartbeat = () => {};
             state.room = null;
             state.roomName = '';
             state.playerNumber = 0;
@@ -234,6 +232,11 @@ export default {
             dispatch('setMapLoaded', new Map(), { root: true });
             commit(MutationTypes.SETTINGS_RESET);
         },
+        // The server closed the room for inactivity: leave it and tell the player
+        roomClosed({ dispatch }) {
+            dispatch('closeDialogRoom', false);
+            dispatch('alertStore/setAlert', ROOM_CLOSED_ALERT, { root: true });
+        },
         openDialogRoom({ commit }, isSinglePlayer = true) {
             commit(MutationTypes.SETTINGS_SET_MODE_DIALOG_ROOM, isSinglePlayer);
             commit(MutationTypes.SETTINGS_SET_OPEN_DIALOG_ROOM, true);
@@ -251,6 +254,10 @@ export default {
             }
 
             state.room.on('value', (snapshot) => {
+                if (isRoomClosing(snapshot)) {
+                    dispatch('roomClosed');
+                    return;
+                }
                 if (snapshot.child('playerName').exists())
                     state.players = Object.values(
                         snapshot.child('playerName').val()

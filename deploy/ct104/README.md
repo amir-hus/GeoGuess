@@ -31,12 +31,12 @@ Per visitor IP (`CF-Connecting-IP` through the tunnel): 3 wrong passwords, then 
 
 ## Room janitor
 
-Every 30 s the helper checks the rooms in the emulator and deletes a room when:
+Every 30 s the helper checks the rooms in the emulator:
 
-- nothing changed and no player heartbeat arrived for 5 minutes (`roomIdleMinutes`), or
-- its game started and every player has left for 60 s (`roomAbandonedSeconds`).
+- **Idle room:** nothing changed in it for 5 minutes (`roomIdleMinutes`) — no join, setting, guess or round. The helper marks it with `closedReason: "inactivity"`; every player's browser (host or not, lobby or mid-game) goes back to the home page with a "Room closed" toast. The room is deleted once the mark has been up for 10 s (`roomNoticeSeconds`), so in practice on the next sweep.
+- **Finished or abandoned game:** started, and every player has left (`active` gone) for 60 s (`roomAbandonedSeconds`). Deleted directly.
 
-Players' browsers write a heartbeat to `__heartbeats/<room>/<player>` every minute while they are in a room or game.
+Having the page open does not count as activity.
 
 ## Tests
 

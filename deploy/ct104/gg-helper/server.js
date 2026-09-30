@@ -30,6 +30,7 @@ function loadConfig(path = CONFIG_PATH) {
         lockMinutes: [3, 3, 10],
         roomIdleMinutes: 5,
         roomAbandonedSeconds: 60,
+        roomNoticeSeconds: 10,
         sweepSeconds: 30,
         databaseUrl: 'http://127.0.0.1:9000',
         databaseNamespace: 'geoguess',
@@ -131,6 +132,7 @@ function startJanitor(config) {
         namespace: config.databaseNamespace,
         idleMs: config.roomIdleMinutes * 60e3,
         abandonedMs: config.roomAbandonedSeconds * 1000,
+        noticeMs: config.roomNoticeSeconds * 1000,
     });
     // Log a failing database once, not on every sweep
     let lastError = null;

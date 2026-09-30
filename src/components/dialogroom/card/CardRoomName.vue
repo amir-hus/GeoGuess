@@ -81,7 +81,7 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
 import { mapState, mapActions } from 'vuex';
-import { listRooms } from '@/utils/roomHeartbeat';
+import { listRooms } from '@/utils/rooms';
 import CardRoomMixin from './mixins/CardRoomMixin';
 export default {
     mixins: [CardRoomMixin],
