@@ -161,6 +161,22 @@
     "reset": "Reset",
     "cantPlayGeoJson": "Invalid GeoJSON, you need to have more than 5 positions."
   },
+  "MyArea": {
+    "sectionTitle": "Around You",
+    "title": "My Area",
+    "radius": "Radius",
+    "dialogTitle": "My Area: {radius} km around you",
+    "locating": "Getting your location…",
+    "locationError": {
+      "denied": "Location access was denied. Search for a place or tap the map to drop a pin.",
+      "unavailable": "Couldn't get your location. Search for a place or tap the map to drop a pin.",
+      "unsupported": "Your browser can't share its location. Search for a place or tap the map to drop a pin."
+    },
+    "searchLabel": "Search a place",
+    "searchPlaceholder": "e.g. Putrajaya",
+    "placeNotFound": "Place not found",
+    "dropPinHint": "Tap the map or drag the pin to move the centre of the circle."
+  },
   "CardRoomSettings": {
     "title": "Game Settings",
     "modeLabel": "Select game mode",
