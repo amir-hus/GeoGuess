@@ -17,8 +17,28 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 export default {
+    data() {
+        return {
+            timer: null,
+        };
+    },
     computed: {
         ...mapState('alertStore', ['alert']),
+    },
+    watch: {
+        alert: {
+            immediate: true,
+            handler(alert) {
+                // Alerts with a timeout (ms) close by themselves
+                clearTimeout(this.timer);
+                if (alert && alert.timeout) {
+                    this.timer = setTimeout(() => this.setAlert(null), alert.timeout);
+                }
+            },
+        },
+    },
+    beforeDestroy() {
+        clearTimeout(this.timer);
     },
     methods: {
         ...mapActions('alertStore', ['setAlert']),

@@ -1,0 +1,14 @@
+[Unit]
+Description=GeoGuess helper (login with lockouts, multiplayer room janitor)
+After=network.target firebase-db.service
+
+[Service]
+User=gg-helper
+Group=gg-helper
+ExecStart=/usr/bin/node /opt/geoguess/deploy/ct104/gg-helper/server.js
+Environment=GG_HELPER_CONFIG=/etc/gg-helper/config.json
+Restart=always
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

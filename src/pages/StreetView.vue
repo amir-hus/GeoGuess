@@ -139,6 +139,7 @@ import StreetViewService from '@/plugins/StreetViewService';
 import {
     getRandomArea,
 } from '../utils';
+import { isRoomClosing, ROOM_CLOSED_ALERT } from '../utils/rooms';
 
 import { GAME_MODE, SCORE_MODE } from '../constants';
 
@@ -353,6 +354,10 @@ export default {
 
             this.room.child('active').set(true);
             this.room.on('value', (snapshot) => {
+                if (isRoomClosing(snapshot)) {
+                    this.roomClosed();
+                    return;
+                }
                 // Check if the room is already removed
                 if (snapshot.hasChild('active')) {
                     // Leaderboard
@@ -498,6 +503,7 @@ export default {
     },
     methods: {
         ...mapActions(['loadAreas']),
+        ...mapActions('alertStore', ['setAlert']),
         async loadStreetView() {
             let {panorama, roundInfo, warning, area} = await this.streetViewService.getStreetView(this.round);
             this.randomLatLng = panorama.location.latLng;
@@ -732,6 +738,13 @@ export default {
             } else {
                 this.$router.push('/');
             }
+        },
+        // The server closed the room for inactivity: every player leaves with a notice
+        roomClosed() {
+            this.canExit = true;
+            this.room.off();
+            this.setAlert(ROOM_CLOSED_ALERT);
+            this.$router.push('/');
         },
         finishGame() {
             this.canExit = true;

@@ -54,6 +54,18 @@ describe('settingsStore.js', () => {
         expect(state.skipMapStep).toBe(false);
     });
 
+    it('roomClosed should leave the room and show the inactivity toast', ()=>{
+        const dispatch = jest.fn();
+        settingsStore.actions.roomClosed({ dispatch });
+
+        expect(dispatch).toBeCalledWith('closeDialogRoom', false);
+        expect(dispatch).toBeCalledWith(
+            'alertStore/setAlert',
+            expect.objectContaining({ title: 'RoomClosed.title', timeout: 10000 }),
+            { root: true }
+        );
+    });
+
     it('setPlayerName will commit playerName', ()=>{
         const spy = jest.spyOn(window.localStorage.__proto__, 'setItem');
         const commit = jest.fn();
