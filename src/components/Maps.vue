@@ -65,6 +65,20 @@
                 <v-btn id="btnPin" fab x-small @click="pinActive = !pinActive">
                     <v-icon dark> mdi-pin{{ pinActive ? '-off' : '' }} </v-icon>
                 </v-btn>
+
+                <v-btn
+                    v-if="playArea && mode === 'classic'"
+                    id="btnPlayArea"
+                    fab
+                    x-small
+                    :title="$t('Maps.togglePlayArea')"
+                    :aria-label="$t('Maps.togglePlayArea')"
+                    @click="showPlayArea = !showPlayArea"
+                >
+                    <v-icon dark>
+                        mdi-circle{{ showPlayArea ? '-off' : '' }}-outline
+                    </v-icon>
+                </v-btn>
             </div>
         </div>
         <v-btn
@@ -86,6 +100,8 @@
             id="map"
             ref="map"
             :bbox="bbox"
+            :play-area="playArea"
+            :show-play-area="showPlayArea"
             @setSeletedPos="setSeletedPos"
         />
         <MapAreas
@@ -205,6 +221,7 @@ export default {
         'timeLimitation',
         'difficulty',
         'bbox',
+        'playArea',
         'mode',
         'area',
         'timeAttack',
@@ -235,6 +252,7 @@ export default {
             size: 2,
             isNotepadVisible: false,
             pinActive: localStorage.getItem('pinActive') === 'true',
+            showPlayArea: localStorage.getItem('showPlayArea') !== 'false',
             printMapFull: false,
             countdownStarted: false,
             game: {
@@ -257,6 +275,9 @@ export default {
     watch: {
       pinActive() {
         localStorage.setItem('pinActive', this.pinActive);
+      },
+      showPlayArea() {
+        localStorage.setItem('showPlayArea', this.showPlayArea);
       },
       printMapFull(value) {
         this.$emit('printMapFull', value);

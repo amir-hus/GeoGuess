@@ -7,6 +7,10 @@ import router from '../../router';
 import { getMaxDistanceBbox } from '../../utils';
 import * as MutationTypes from '../mutation-types';
 
+// Circle to draw on the guess map ({ lat, lng, radius } in km), set by My Area
+const getPlayArea = (rootState) =>
+    rootState.homeStore.map.geojson?.properties?.playArea || null;
+
 export class GameSettings {
     constructor(
         _allPanorama = false,
@@ -257,6 +261,7 @@ export default {
         setSettings({ commit, state, rootState, dispatch }) {
             let difficulty = 2000;
             let bboxObj;
+            const playArea = getPlayArea(rootState);
             if (rootState.homeStore.map.geojson) {
                 bboxObj = bbox(rootState.homeStore.map.geojson);
                 commit(MutationTypes.SETTINGS_SET_BBOX, bboxObj);
@@ -272,6 +277,7 @@ export default {
                         difficulty,
                         placeGeoJson: rootState.homeStore.map.geojson,
                         bboxObj: bboxObj,
+                        playArea,
                         ...(rootState.homeStore.map ? {mapDetails: rootState.homeStore.map.details} : undefined)
                     },
                 });
@@ -283,6 +289,7 @@ export default {
                         timeLimitation: state.gameSettings.time,
                         difficulty,
                         ...(bboxObj && { bboxObj: bboxObj }),
+                        ...(playArea && { playArea }),
                     },
                     (error) => {
                         if (!error) {
@@ -307,6 +314,7 @@ export default {
                     difficulty: state.difficulty,
                     placeGeoJson: rootState.homeStore.map.geojson,
                     bboxObj: state.bboxObj,
+                    playArea: getPlayArea(rootState),
                 };
                 // Set flag started
                 state.room.update({
@@ -319,6 +327,7 @@ export default {
                     gameParams = {
                         difficulty: snapshot.child('difficulty').val(),
                         bboxObj: snapshot.child('bboxObj').val(),
+                        playArea: snapshot.child('playArea').val(),
                         modeSelected: snapshot.child('modeSelected').val(),
                         timeAttackSelected: snapshot
                             .child('timeAttackSelected')

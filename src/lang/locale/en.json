@@ -66,6 +66,7 @@
     "leaderboard": "Leaderboard"
   },
   "Maps": {
+    "togglePlayArea": "Show or hide the play area",
     "makeGuess": "MAKE GUESS",
     "guess": "GUESS",
     "nextRound": "NEXT ROUND",
