@@ -8,7 +8,6 @@
             color="darkGreen"
             @click="open"
         >
-            <v-icon left>mdi-map-marker-radius</v-icon>
             {{ $t('MyArea.button') }}
         </v-btn>
 
