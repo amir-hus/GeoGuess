@@ -171,6 +171,11 @@ describe('MyAreaButton.vue', () => {
         expect(map).toBeInstanceOf(GeoMapCustom);
         expect(map.name).toEqual('My Area (10 km)');
         expect(map.geojson.geometry.type).toEqual('Polygon');
+        expect(map.geojson.properties.playArea).toEqual({
+            lat: 3.139,
+            lng: 101.6869,
+            radius: 10,
+        });
         expect(actions.openDialogRoom).toBeCalledWith(expect.anything(), false);
         expect(store.state.settingsStore.skipMapStep).toBe(true);
     });

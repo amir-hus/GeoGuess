@@ -24,14 +24,34 @@ import MapMixin from './mixins/MapMixin';
 export default {
     name: 'Map',
     mixins: [MapMixin],
+    props: {
+        // My Area circle ({ lat, lng, radius } in km)
+        playArea: {
+            type: Object,
+            default: null,
+        },
+        showPlayArea: {
+            type: Boolean,
+            default: true,
+        },
+    },
     data() {
         return {
             map: null,
             marker: [],
             markers: [],
             polylines: [],
+            playAreaCircle: null,
             strokeColors: STROKE_COLORS,
         };
+    },
+    watch: {
+        playArea() {
+            this.drawPlayArea();
+        },
+        showPlayArea() {
+            this.drawPlayArea();
+        },
     },
     async mounted() {
         await this.$gmapApiPromiseLazy();
@@ -39,9 +59,29 @@ export default {
             this.map = map;
 
             this.centerOnBbox();
+            this.drawPlayArea();
         });
     },
     methods: {
+        drawPlayArea() {
+            if (!this.map) return;
+            if (this.playAreaCircle) {
+                this.playAreaCircle.setMap(null);
+                this.playAreaCircle = null;
+            }
+            if (!this.playArea || !this.showPlayArea) return;
+            this.playAreaCircle = new google.maps.Circle({
+                map: this.map,
+                center: { lat: this.playArea.lat, lng: this.playArea.lng },
+                radius: this.playArea.radius * 1000,
+                strokeColor: '#1565C0',
+                strokeWeight: 2,
+                fillColor: '#1E88E5',
+                fillOpacity: 0.1,
+                // Clicks must reach the map to place the guess
+                clickable: false,
+            });
+        },
         putMarker(position, isRandomLocation, label) {
             let info = {};
             if (isRandomLocation) {

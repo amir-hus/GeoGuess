@@ -50,6 +50,7 @@
                         :difficulty="difficultyData"
                         :time-limitation="timeLimitation"
                         :bbox="bbox"
+                        :play-area="playArea"
                         :mode="mode"
                         :area="area"
                         :time-attack="timeAttack"
@@ -197,6 +198,11 @@ export default {
         bboxObj: {
             default: null,
             type: Array,
+        },
+        // My Area circle ({ lat, lng, radius } in km) drawn on the guess map
+        playArea: {
+            default: null,
+            type: Object,
         },
         roundsPredefined: {
             default: null,

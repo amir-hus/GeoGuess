@@ -286,6 +286,14 @@ export default {
                 this.center.lng,
                 this.radius
             );
+            // Lets the guess map draw the circle during the game
+            map.geojson.properties = {
+                playArea: {
+                    lat: this.center.lat,
+                    lng: this.center.lng,
+                    radius: this.radius,
+                },
+            };
             this.setMapLoaded(map);
             this.visible = false;
             // The circle is already the map, so go straight to the game settings
